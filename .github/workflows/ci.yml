@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x, 22.x]
 
     steps:
       - name: Checkout code
@@ -32,8 +32,11 @@ jobs:
       - name: Typecheck & Build
         run: npm run build
 
-      - name: Run Test Suite
+      - name: Generate Fixture Archive
+        run: npm run test:fixture
+
+      - name: Run Unit Tests
         run: npm test
 
       - name: Run Comprehensive Stress Benchmark (5 Suites)
-        run: npx tsx test/stress-test-suite.ts
+        run: npm run test:stress
