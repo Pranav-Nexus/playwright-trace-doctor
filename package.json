@@ -1,0 +1,46 @@
+{
+  "name": "playwright-trace-doctor",
+  "version": "1.0.0",
+  "description": "One-shot diagnostic & self-healing intelligence engine for Playwright traces (MCP Server & CLI)",
+  "main": "dist/index.js",
+  "bin": {
+    "trace-doctor": "dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "mcp": "node dist/mcp.js",
+    "dev:cli": "tsx src/cli.ts",
+    "dev:mcp": "tsx src/mcp.ts",
+    "test:fixture": "tsx test/generate-fixture.ts",
+    "test": "tsx test/test-doctor.ts"
+  },
+  "keywords": [
+    "playwright",
+    "trace",
+    "mcp",
+    "model-context-protocol",
+    "testing",
+    "automation",
+    "agentic-qa",
+    "self-healing",
+    "debug"
+  ],
+  "author": "Pranav H",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "adm-zip": "^0.5.16",
+    "commander": "^13.1.0",
+    "picocolors": "^1.1.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^22.13.9",
+    "playwright": "^1.50.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
