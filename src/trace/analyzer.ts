@@ -103,7 +103,6 @@ function filterCorrelatedNetworkErrors(
   const failed = requests.filter((r) => r.failed || r.status >= 400);
   if (!failedAction) return failed.slice(-5);
 
-  // Return network failures within the action window or preceding 10 seconds
   const actionTime = failedAction.startTime || failedAction.endTime;
   if (!actionTime) return failed.slice(-5);
 
@@ -148,8 +147,9 @@ function classifyFailure(
 
   const errMsg = action.error.message || '';
   const logStr = (action.log || []).join('\n');
+  const apiName = action.apiName || '';
 
-  // Strict mode violation
+  // 1. Strict mode violation
   if (
     errMsg.includes('strict mode violation') ||
     errMsg.includes('resolved to 2 elements') ||
@@ -163,7 +163,7 @@ function classifyFailure(
     };
   }
 
-  // Pointer / Click intercepted
+  // 2. Pointer / Click intercepted
   if (
     errMsg.includes('intercepts pointer events') ||
     errMsg.includes('is not clickable') ||
@@ -178,7 +178,7 @@ function classifyFailure(
     };
   }
 
-  // Backend API Failure correlation
+  // 3. Backend API Failure correlation (takes precedence if 5xx crashed the flow)
   const has5xx = networkErrors.some((n) => n.status >= 500);
   if (has5xx) {
     const badReq = networkErrors.find((n) => n.status >= 500)!;
@@ -190,7 +190,24 @@ function classifyFailure(
     };
   }
 
-  // Timeout - locator not found / visible
+  // 4. Assertion failure (explicit expect checks)
+  if (
+    apiName.startsWith('expect') ||
+    errMsg.includes('expect(') ||
+    errMsg.includes('Expected:') ||
+    errMsg.includes('Expected pattern:') ||
+    errMsg.includes('Expected substring:') ||
+    (errMsg.includes('waiting for expect('))
+  ) {
+    return {
+      type: 'ASSERTION_FAILED',
+      confidence: 'HIGH',
+      explanation: 'Playwright assertion expectation mismatch.',
+      rootCause: errMsg.split('\n')[0] || 'Assertion condition failed.',
+    };
+  }
+
+  // 5. Timeout - locator not found / visible
   if (errMsg.includes('Timeout') || errMsg.includes('timed out') || logStr.includes('Timeout')) {
     if (errMsg.includes('waiting for') && (errMsg.includes('visible') || errMsg.includes('to be visible'))) {
       return {
@@ -208,16 +225,6 @@ function classifyFailure(
     };
   }
 
-  // Assertion failure
-  if (errMsg.includes('expect(') || errMsg.includes('Expected') || errMsg.includes('received')) {
-    return {
-      type: 'ASSERTION_FAILED',
-      confidence: 'HIGH',
-      explanation: 'Playwright assertion expectation mismatch.',
-      rootCause: errMsg.split('\n')[0] || 'Assertion condition failed.',
-    };
-  }
-
   return {
     type: 'UNKNOWN_ERROR',
     confidence: 'MEDIUM',
@@ -230,7 +237,6 @@ function extractDomContext(archive: ParsedTraceArchive, action?: TraceAction): D
   if (!archive.domSnapshots || archive.domSnapshots.size === 0) return undefined;
 
   const selector = action?.selector;
-  // Try to find the snapshot associated with the failed action
   let snapshotHtml: string | undefined;
 
   if (action?.callId && archive.domSnapshots.has(action.callId)) {
@@ -238,7 +244,6 @@ function extractDomContext(archive: ParsedTraceArchive, action?: TraceAction): D
   } else if (action?.beforeSnapshot && archive.domSnapshots.has(action.beforeSnapshot)) {
     snapshotHtml = archive.domSnapshots.get(action.beforeSnapshot);
   } else {
-    // Pick the latest available snapshot
     const keys = Array.from(archive.domSnapshots.keys());
     if (keys.length > 0) {
       snapshotHtml = archive.domSnapshots.get(keys[keys.length - 1]);
@@ -247,7 +252,6 @@ function extractDomContext(archive: ParsedTraceArchive, action?: TraceAction): D
 
   if (!snapshotHtml) return undefined;
 
-  // Sanitize and prune HTML to prevent token explosion
   const cleanHtml = pruneHtmlForTokens(snapshotHtml);
 
   return {
@@ -267,7 +271,6 @@ function pruneHtmlForTokens(rawHtml: string): string {
 }
 
 function findSnippetMatchingSelector(html: string, selector: string): string | undefined {
-  // If selector is an ID (e.g. #real-submit-btn or button#real-submit-btn)
   const idMatch = selector.match(/#([a-zA-Z0-9_-]+)/);
   if (idMatch) {
     const id = idMatch[1];
@@ -276,7 +279,6 @@ function findSnippetMatchingSelector(html: string, selector: string): string | u
     if (match) return match[0];
   }
 
-  // If selector has text or role
   const textMatch = selector.match(/text=(['"]?)(.*?)\1/);
   if (textMatch) {
     const text = textMatch[2];
@@ -298,7 +300,7 @@ function generateRecommendations(
   const recs: LocatorRecommendation[] = [];
   const selector = action?.selector || '';
 
-  // 1. If backend API 500 error occurred, first recommendation is to fix backend or mock route
+  // 1. Backend API 500 Failure
   if (classification?.type === 'BACKEND_API_FAILURE' && networkErrors.length > 0) {
     const endpoint = networkErrors[0].url;
     recs.push({
@@ -330,7 +332,7 @@ function generateRecommendations(
     recs.push({
       type: 'WAIT_CONDITION',
       priority: 1,
-      recommendedCode: `await expect(page.locator('.modal-backdrop, .loading-spinner')).toBeHidden();\nawait page.locator('${selector}').click();`,
+      recommendedCode: `await expect(page.locator('.modal-backdrop, .loading-overlay, .spinner')).toBeHidden();\nawait page.locator('${selector}').click();`,
       rationale: 'Wait for overlapping modal backdrop, drawer, or loading overlay to detach before clicking.',
     });
     recs.push({
@@ -341,12 +343,27 @@ function generateRecommendations(
     } as any);
   }
 
-  // 4. Timeout Locator Not Found / Not Visible
+  // 4. Assertion Mismatch
+  if (classification?.type === 'ASSERTION_FAILED') {
+    recs.push({
+      type: 'ASSERTION',
+      priority: 1,
+      recommendedCode: `// Use web-first polling assertion with custom timeout:\nawait expect(page.locator('${selector || '#target'}')).toHaveText(/expected_pattern/i, { timeout: 5000 });`,
+      rationale: 'Web-first assertions automatically retry until condition is met or timeout expires.',
+    });
+    recs.push({
+      type: 'WAIT_CONDITION',
+      priority: 2,
+      recommendedCode: `// If asserting against async state transitions, poll explicitly:\nawait expect.poll(async () => {\n  return await page.locator('${selector || '#target'}').textContent();\n}, { message: 'Timed out waiting for state change', timeout: 5000 }).toBe('Expected');`,
+      rationale: 'expect.poll safely re-queries custom async getters until the expected value stabilizes.',
+    });
+  }
+
+  // 5. Timeout Locator Not Found / Not Visible
   if (
     classification?.type === 'TIMEOUT_LOCATOR_NOT_FOUND' ||
     classification?.type === 'TIMEOUT_LOCATOR_NOT_VISIBLE'
   ) {
-    // Recommend modern user-facing role locators
     if (selector.includes('button') || selector.includes('btn')) {
       recs.push({
         type: 'ROLE',

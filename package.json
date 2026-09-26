@@ -6,6 +6,11 @@
   "bin": {
     "trace-doctor": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -14,7 +19,9 @@
     "dev:cli": "tsx src/cli.ts",
     "dev:mcp": "tsx src/mcp.ts",
     "test:fixture": "tsx test/generate-fixture.ts",
-    "test": "tsx test/test-doctor.ts"
+    "test": "tsx test/test-doctor.ts",
+    "test:stress": "tsx test/stress-test-suite.ts",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "playwright",

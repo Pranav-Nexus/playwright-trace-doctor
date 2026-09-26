@@ -1,0 +1,375 @@
+[
+  {
+    "id": "strict-mode",
+    "name": "Strict Mode Violation (Multiple Elements)",
+    "expected": "STRICT_MODE_VIOLATION",
+    "actual": "STRICT_MODE_VIOLATION",
+    "passed": true,
+    "parseTimeMs": 4.19,
+    "analysisTimeMs": 0.81,
+    "recommendationsCount": 2,
+    "diagnostic": {
+      "testName": "Playwright Test",
+      "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\strict-mode.zip",
+      "durationMs": 112.56799999999998,
+      "failedAction": {
+        "apiName": "click",
+        "selector": "button.submit-btn",
+        "errorMessage": "Error: strict mode violation: locator('button.submit-btn') resolved to 2 elements:\n    1) <button id=\"btn-1\" class=\"submit-btn\">Submit Order</button> aka locator('#btn-1')\n    2) <button id=\"btn-2\" class=\"submit-btn\">Submit Order</button> aka locator('#btn-2')\n",
+        "callStack": "Error: Error: strict mode violation: locator('button.submit-btn') resolved to 2 elements:\n    1) <button id=\"btn-1\" class=\"submit-btn\">Submit Order</button> aka locator('#btn-1')\n    2) <button id=\"btn-2\" class=\"submit-btn\">Submit Order</button> aka locator('#btn-2')\n\n    at CRExecutionContext.evaluateWithArguments (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:35610:17)\n    at async LongStandingScope._race (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:3487:18)\n    at async evaluateExpression (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:19519:12)\n    at async getResult (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:20912:33)\n    at async FrameSelectors._callOnSelectorInternal (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:20940:16)\n    at async FrameSelectors.callOnSelectorHandle (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:20961:25)\n    at async C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:24040:28\n    at async _Frame.retryWithProgressAndTimeouts (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:24011:29)\n    at async _Frame.retryWithProgressAndBackoff (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:23995:16)\n    at async _Frame.click (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:24088:27)",
+        "logSteps": [
+          "waiting for locator('button.submit-btn')"
+        ],
+        "callId": "call@10"
+      },
+      "classification": {
+        "type": "STRICT_MODE_VIOLATION",
+        "confidence": "HIGH",
+        "explanation": "Locator resolved to multiple matching DOM elements in strict mode.",
+        "rootCause": "Playwright requires single-element resolution. Selector \"button.submit-btn\" is ambiguous."
+      },
+      "domContext": {
+        "failingSelector": "button.submit-btn",
+        "nearbyElementsHtml": "[\"HTML\",{},[[2,0]],[\"BODY\",{},[\"DIV\",{},[[2,1]],[\"BUTTON\",{\"__playwright_target__\":\"\",\"class\":\"submit-btn\",\"id\":\"btn-1\"},[[2,2]]],[[2,4]],[\"BUTTON\",{\"__playwright_target__\":\"\",\"class\":\"submit-btn\",\"id\":\"btn-2\"},[[2,5]]],[[2,7]]],[[2,9]]]]"
+      },
+      "networkErrors": [],
+      "consoleErrors": [],
+      "recommendations": [
+        {
+          "type": "ROLE",
+          "priority": 1,
+          "recommendedCode": "page.locator('button.submit-btn').first() // Or scope by parent container",
+          "rationale": "Playwright strict mode requires unambiguous resolution. Use .first() or narrow the parent locator."
+        },
+        {
+          "type": "TEST_ID",
+          "priority": 2,
+          "recommendedCode": "page.getByTestId('unique-target-id')",
+          "rationale": "Add a distinct data-testid attribute to differentiate between identical UI elements."
+        }
+      ],
+      "markdownSummary": "## 🩺 Playwright Trace Doctor Diagnostic\n\n**Classification:** `STRICT_MODE_VIOLATION` (HIGH confidence)\n**Root Cause:** Playwright requires single-element resolution. Selector \"button.submit-btn\" is ambiguous.\n\n### 💥 Failed Step\n- **Action:** `click`\n- **Failing Locator:** `button.submit-btn`\n- **Error:** `Error: strict mode violation: locator('button.submit-btn') resolved to 2 elements:`\n\n### 🛠️ Self-Healing Fix Recommendations\n**[ROLE]** Playwright strict mode requires unambiguous resolution. Use .first() or narrow the parent locator.\n```typescript\npage.locator('button.submit-btn').first() // Or scope by parent container\n```\n**[TEST_ID]** Add a distinct data-testid attribute to differentiate between identical UI elements.\n```typescript\npage.getByTestId('unique-target-id')\n```\n"
+    }
+  },
+  {
+    "id": "pointer-intercept",
+    "name": "Pointer Events Intercepted (Modal Overlay)",
+    "expected": "POINTER_INTERCEPTED",
+    "actual": "POINTER_INTERCEPTED",
+    "passed": true,
+    "parseTimeMs": 2.28,
+    "analysisTimeMs": 0.22,
+    "recommendationsCount": 2,
+    "diagnostic": {
+      "testName": "Playwright Test",
+      "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\pointer-intercept.zip",
+      "durationMs": 2570.571,
+      "failedAction": {
+        "apiName": "click",
+        "selector": "#checkout-btn",
+        "errorMessage": "Timeout 2500ms exceeded.",
+        "callStack": "TimeoutError: Timeout 2500ms exceeded.\n    at _ProgressController.run (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:19135:44)",
+        "logSteps": [
+          "waiting for locator('#checkout-btn')",
+          "  locator resolved to <button id=\"checkout-btn\">Complete Purchase</button>",
+          "attempting click action",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 20ms",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 100ms",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 100ms",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 500ms",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 500ms",
+          "  waiting for element to be visible, enabled and stable",
+          "  element is visible, enabled and stable",
+          "  scrolling into view if needed",
+          "  done scrolling",
+          "  <p>Processing previous request...</p> from <div id=\"loading-overlay\">…</div> subtree intercepts pointer events",
+          "retrying click action",
+          "  waiting 500ms"
+        ],
+        "callId": "call@25"
+      },
+      "classification": {
+        "type": "POINTER_INTERCEPTED",
+        "confidence": "HIGH",
+        "explanation": "The target element is covered or obscured by an overlay, modal backdrop, or sticky header.",
+        "rootCause": "Element was found in the DOM but pointer dispatch was blocked by an overlapping element."
+      },
+      "domContext": {
+        "failingSelector": "#checkout-btn",
+        "nearbyElementsHtml": "[[2,1]]"
+      },
+      "networkErrors": [],
+      "consoleErrors": [],
+      "recommendations": [
+        {
+          "type": "WAIT_CONDITION",
+          "priority": 1,
+          "recommendedCode": "await expect(page.locator('.modal-backdrop, .loading-overlay, .spinner')).toBeHidden();\nawait page.locator('#checkout-btn').click();",
+          "rationale": "Wait for overlapping modal backdrop, drawer, or loading overlay to detach before clicking."
+        },
+        {
+          "type": "ACTION",
+          "priority": 2,
+          "recommendedCode": "await page.locator('#checkout-btn').click({ force: true });",
+          "rationale": "Bypasses Playwright actionability checks if element is intentionally overlaid."
+        }
+      ],
+      "markdownSummary": "## 🩺 Playwright Trace Doctor Diagnostic\n\n**Classification:** `POINTER_INTERCEPTED` (HIGH confidence)\n**Root Cause:** Element was found in the DOM but pointer dispatch was blocked by an overlapping element.\n\n### 💥 Failed Step\n- **Action:** `click`\n- **Failing Locator:** `#checkout-btn`\n- **Error:** `Timeout 2500ms exceeded.`\n\n### 🛠️ Self-Healing Fix Recommendations\n**[WAIT_CONDITION]** Wait for overlapping modal backdrop, drawer, or loading overlay to detach before clicking.\n```typescript\nawait expect(page.locator('.modal-backdrop, .loading-overlay, .spinner')).toBeHidden();\nawait page.locator('#checkout-btn').click();\n```\n**[ACTION]** Bypasses Playwright actionability checks if element is intentionally overlaid.\n```typescript\nawait page.locator('#checkout-btn').click({ force: true });\n```\n"
+    }
+  },
+  {
+    "id": "locator-timeout",
+    "name": "Locator Timeout (Element Missing in DOM)",
+    "expected": "TIMEOUT_LOCATOR_NOT_FOUND",
+    "actual": "TIMEOUT_LOCATOR_NOT_FOUND",
+    "passed": true,
+    "parseTimeMs": 1.88,
+    "analysisTimeMs": 0.19,
+    "recommendationsCount": 3,
+    "diagnostic": {
+      "testName": "Playwright Test",
+      "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\locator-timeout.zip",
+      "durationMs": 2067.926,
+      "failedAction": {
+        "apiName": "click",
+        "selector": "button#save-preferences",
+        "errorMessage": "Timeout 2000ms exceeded.",
+        "callStack": "TimeoutError: Timeout 2000ms exceeded.\n    at _ProgressController.run (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:19135:44)",
+        "logSteps": [
+          "waiting for locator('button#save-preferences')"
+        ],
+        "callId": "call@40"
+      },
+      "classification": {
+        "type": "TIMEOUT_LOCATOR_NOT_FOUND",
+        "confidence": "HIGH",
+        "explanation": "Timed out waiting for locator \"button#save-preferences\". The element never appeared in the DOM.",
+        "rootCause": "The element locator does not match any current DOM nodes, or the page state did not render in time."
+      },
+      "domContext": {
+        "failingSelector": "button#save-preferences",
+        "nearbyElementsHtml": "[[2,7]]"
+      },
+      "networkErrors": [],
+      "consoleErrors": [],
+      "recommendations": [
+        {
+          "type": "ROLE",
+          "priority": 1,
+          "recommendedCode": "await page.getByRole('button', { name: /confirm|submit|pay/i }).click();",
+          "rationale": "Replace brittle CSS/ID locators with accessible role locators resilient to markup changes."
+        },
+        {
+          "type": "TEST_ID",
+          "priority": 2,
+          "recommendedCode": "await page.getByTestId('checkout-submit-btn').click();",
+          "rationale": "Use explicit data-testid attributes which survive styling and redesign refactors."
+        },
+        {
+          "type": "WAIT_CONDITION",
+          "priority": 3,
+          "recommendedCode": "await expect(page.locator('button#save-preferences')).toBeVisible({ timeout: 10000 });",
+          "rationale": "Use web-first auto-await assertions with extended timeout for slow asynchronous render operations."
+        }
+      ],
+      "markdownSummary": "## 🩺 Playwright Trace Doctor Diagnostic\n\n**Classification:** `TIMEOUT_LOCATOR_NOT_FOUND` (HIGH confidence)\n**Root Cause:** The element locator does not match any current DOM nodes, or the page state did not render in time.\n\n### 💥 Failed Step\n- **Action:** `click`\n- **Failing Locator:** `button#save-preferences`\n- **Error:** `Timeout 2000ms exceeded.`\n\n### 🛠️ Self-Healing Fix Recommendations\n**[ROLE]** Replace brittle CSS/ID locators with accessible role locators resilient to markup changes.\n```typescript\nawait page.getByRole('button', { name: /confirm|submit|pay/i }).click();\n```\n**[TEST_ID]** Use explicit data-testid attributes which survive styling and redesign refactors.\n```typescript\nawait page.getByTestId('checkout-submit-btn').click();\n```\n**[WAIT_CONDITION]** Use web-first auto-await assertions with extended timeout for slow asynchronous render operations.\n```typescript\nawait expect(page.locator('button#save-preferences')).toBeVisible({ timeout: 10000 });\n```\n"
+    }
+  },
+  {
+    "id": "backend-500",
+    "name": "Backend API 500 Failure with Downstream Timeout",
+    "expected": "BACKEND_API_FAILURE",
+    "actual": "BACKEND_API_FAILURE",
+    "passed": true,
+    "parseTimeMs": 2.35,
+    "analysisTimeMs": 0.15,
+    "recommendationsCount": 1,
+    "diagnostic": {
+      "testName": "Playwright Test",
+      "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\backend-500.zip",
+      "durationMs": 2635.7120000000004,
+      "failedAction": {
+        "apiName": "waitForSelector",
+        "selector": ".success-badge",
+        "errorMessage": "Timeout 2000ms exceeded.",
+        "callStack": "TimeoutError: Timeout 2000ms exceeded.\n    at _ProgressController.run (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:12360:32)\n    at DispatcherConnection.dispatch (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:19135:44)",
+        "logSteps": [
+          "waiting for locator('.success-badge') to be visible"
+        ],
+        "callId": "call@63"
+      },
+      "classification": {
+        "type": "BACKEND_API_FAILURE",
+        "confidence": "HIGH",
+        "explanation": "Test failed downstream of a backend API failure (HTTP 500 on https://api.portal.internal/orders/confirm).",
+        "rootCause": "Backend service responded with HTTP 500: Internal Server Error."
+      },
+      "domContext": {
+        "failingSelector": ".success-badge",
+        "nearbyElementsHtml": "[[3,2]]"
+      },
+      "networkErrors": [
+        {
+          "url": "https://api.portal.internal/orders/confirm",
+          "method": "POST",
+          "status": 500,
+          "statusText": "Internal Server Error",
+          "timestamp": 0,
+          "failed": true
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "timestamp": 5622.221,
+          "location": {
+            "file": "https://api.portal.internal/orders/confirm",
+            "line": 0,
+            "column": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "API responded with status 500",
+          "timestamp": 5622.705,
+          "location": {
+            "file": "",
+            "line": 4,
+            "column": 37
+          }
+        }
+      ],
+      "recommendations": [
+        {
+          "type": "WAIT_CONDITION",
+          "priority": 1,
+          "recommendedCode": "// Downstream Backend Failure: Verify https://api.portal.internal/orders/confirm or mock response in test:\nawait page.route('https://api.portal.internal/orders/confirm', async route => {\n  await route.fulfill({ status: 200, json: { status: 'success' } });\n});",
+          "rationale": "The failure originated from an HTTP 500 on https://api.portal.internal/orders/confirm, not broken test UI logic."
+        }
+      ],
+      "markdownSummary": "## 🩺 Playwright Trace Doctor Diagnostic\n\n**Classification:** `BACKEND_API_FAILURE` (HIGH confidence)\n**Root Cause:** Backend service responded with HTTP 500: Internal Server Error.\n\n### 💥 Failed Step\n- **Action:** `waitForSelector`\n- **Failing Locator:** `.success-badge`\n- **Error:** `Timeout 2000ms exceeded.`\n\n### 🌐 Correlated Network Failures (1)\n- **HTTP 500** `POST https://api.portal.internal/orders/confirm` \n\n### ⚠️ Correlated Console Errors\n- `Failed to load resource: the server responded with a status of 500 (Internal Server Error)`\n- `API responded with status 500`\n\n### 🛠️ Self-Healing Fix Recommendations\n**[WAIT_CONDITION]** The failure originated from an HTTP 500 on https://api.portal.internal/orders/confirm, not broken test UI logic.\n```typescript\n// Downstream Backend Failure: Verify https://api.portal.internal/orders/confirm or mock response in test:\nawait page.route('https://api.portal.internal/orders/confirm', async route => {\n  await route.fulfill({ status: 200, json: { status: 'success' } });\n});\n```\n"
+    }
+  },
+  {
+    "id": "assertion-failure",
+    "name": "Assertion Mismatch Failure (expect.toHaveText)",
+    "expected": "ASSERTION_FAILED",
+    "actual": "ASSERTION_FAILED",
+    "passed": true,
+    "parseTimeMs": 1.89,
+    "analysisTimeMs": 0.18,
+    "recommendationsCount": 2,
+    "diagnostic": {
+      "testName": "Playwright Test",
+      "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\assertion-failure.zip",
+      "durationMs": 1573.7019999999993,
+      "failedAction": {
+        "apiName": "expect",
+        "selector": "#account-status",
+        "errorMessage": "Expect failed",
+        "callStack": "ExpectError: Expect failed\n    at _Frame.expect (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:24312:17)\n    at async _FrameDispatcher.expect (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:54886:11)\n    at async _ProgressController.run (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:12374:27)\n    at async DispatcherConnection.dispatch (C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\node_modules\\playwright-core\\lib\\coreBundle.js:19135:27)",
+        "logSteps": [
+          "Expect \"toHaveText\" locator('#account-status') with timeout 1500ms",
+          "waiting for locator('#account-status')",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\"",
+          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
+          "  unexpected value \"Account Suspended\""
+        ],
+        "callId": "call@78"
+      },
+      "classification": {
+        "type": "ASSERTION_FAILED",
+        "confidence": "HIGH",
+        "explanation": "Playwright assertion expectation mismatch.",
+        "rootCause": "Expect failed"
+      },
+      "domContext": {
+        "failingSelector": "#account-status",
+        "nearbyElementsHtml": "[\"HTML\",{},[[2,0]],[\"BODY\",{},[\"DIV\",{\"__playwright_target__\":\"\",\"id\":\"account-status\"},[[2,1]]],[[2,3]]]]"
+      },
+      "networkErrors": [],
+      "consoleErrors": [],
+      "recommendations": [
+        {
+          "type": "ASSERTION",
+          "priority": 1,
+          "recommendedCode": "// Use web-first polling assertion with custom timeout:\nawait expect(page.locator('#account-status')).toHaveText(/expected_pattern/i, { timeout: 5000 });",
+          "rationale": "Web-first assertions automatically retry until condition is met or timeout expires."
+        },
+        {
+          "type": "WAIT_CONDITION",
+          "priority": 2,
+          "recommendedCode": "// If asserting against async state transitions, poll explicitly:\nawait expect.poll(async () => {\n  return await page.locator('#account-status').textContent();\n}, { message: 'Timed out waiting for state change', timeout: 5000 }).toBe('Expected');",
+          "rationale": "expect.poll safely re-queries custom async getters until the expected value stabilizes."
+        }
+      ],
+      "markdownSummary": "## 🩺 Playwright Trace Doctor Diagnostic\n\n**Classification:** `ASSERTION_FAILED` (HIGH confidence)\n**Root Cause:** Expect failed\n\n### 💥 Failed Step\n- **Action:** `expect`\n- **Failing Locator:** `#account-status`\n- **Error:** `Expect failed`\n\n### 🛠️ Self-Healing Fix Recommendations\n**[ASSERTION]** Web-first assertions automatically retry until condition is met or timeout expires.\n```typescript\n// Use web-first polling assertion with custom timeout:\nawait expect(page.locator('#account-status')).toHaveText(/expected_pattern/i, { timeout: 5000 });\n```\n**[WAIT_CONDITION]** expect.poll safely re-queries custom async getters until the expected value stabilizes.\n```typescript\n// If asserting against async state transitions, poll explicitly:\nawait expect.poll(async () => {\n  return await page.locator('#account-status').textContent();\n}, { message: 'Timed out waiting for state change', timeout: 5000 }).toBe('Expected');\n```\n"
+    }
+  }
+]
