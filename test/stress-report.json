@@ -5,13 +5,13 @@
     "expected": "STRICT_MODE_VIOLATION",
     "actual": "STRICT_MODE_VIOLATION",
     "passed": true,
-    "parseTimeMs": 4.19,
-    "analysisTimeMs": 0.81,
+    "parseTimeMs": 4.57,
+    "analysisTimeMs": 0.84,
     "recommendationsCount": 2,
     "diagnostic": {
       "testName": "Playwright Test",
       "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\strict-mode.zip",
-      "durationMs": 112.56799999999998,
+      "durationMs": 115.95900000000006,
       "failedAction": {
         "apiName": "click",
         "selector": "button.submit-btn",
@@ -57,13 +57,13 @@
     "expected": "POINTER_INTERCEPTED",
     "actual": "POINTER_INTERCEPTED",
     "passed": true,
-    "parseTimeMs": 2.28,
-    "analysisTimeMs": 0.22,
+    "parseTimeMs": 4.59,
+    "analysisTimeMs": 0.55,
     "recommendationsCount": 2,
     "diagnostic": {
       "testName": "Playwright Test",
       "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\pointer-intercept.zip",
-      "durationMs": 2570.571,
+      "durationMs": 2585.3900000000003,
       "failedAction": {
         "apiName": "click",
         "selector": "#checkout-btn",
@@ -159,13 +159,13 @@
     "expected": "TIMEOUT_LOCATOR_NOT_FOUND",
     "actual": "TIMEOUT_LOCATOR_NOT_FOUND",
     "passed": true,
-    "parseTimeMs": 1.88,
-    "analysisTimeMs": 0.19,
+    "parseTimeMs": 3.6,
+    "analysisTimeMs": 0.32,
     "recommendationsCount": 3,
     "diagnostic": {
       "testName": "Playwright Test",
       "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\locator-timeout.zip",
-      "durationMs": 2067.926,
+      "durationMs": 2100.5359999999996,
       "failedAction": {
         "apiName": "click",
         "selector": "button#save-preferences",
@@ -217,13 +217,13 @@
     "expected": "BACKEND_API_FAILURE",
     "actual": "BACKEND_API_FAILURE",
     "passed": true,
-    "parseTimeMs": 2.35,
-    "analysisTimeMs": 0.15,
+    "parseTimeMs": 3.09,
+    "analysisTimeMs": 0.18,
     "recommendationsCount": 1,
     "diagnostic": {
       "testName": "Playwright Test",
       "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\backend-500.zip",
-      "durationMs": 2635.7120000000004,
+      "durationMs": 2660.4629999999997,
       "failedAction": {
         "apiName": "waitForSelector",
         "selector": ".success-badge",
@@ -258,7 +258,7 @@
         {
           "type": "error",
           "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-          "timestamp": 5622.221,
+          "timestamp": 6043.888,
           "location": {
             "file": "https://api.portal.internal/orders/confirm",
             "line": 0,
@@ -268,7 +268,7 @@
         {
           "type": "error",
           "text": "API responded with status 500",
-          "timestamp": 5622.705,
+          "timestamp": 6044.653,
           "location": {
             "file": "",
             "line": 4,
@@ -293,13 +293,13 @@
     "expected": "ASSERTION_FAILED",
     "actual": "ASSERTION_FAILED",
     "passed": true,
-    "parseTimeMs": 1.89,
-    "analysisTimeMs": 0.18,
+    "parseTimeMs": 2.99,
+    "analysisTimeMs": 0.28,
     "recommendationsCount": 2,
     "diagnostic": {
       "testName": "Playwright Test",
       "tracePath": "C:\\Users\\harih\\Documents\\Personal\\Projects\\Antigravity CLI\\playwright-trace-doctor\\test\\fixtures\\stress\\assertion-failure.zip",
-      "durationMs": 1573.7019999999993,
+      "durationMs": 1595.4830000000002,
       "failedAction": {
         "apiName": "expect",
         "selector": "#account-status",
@@ -308,8 +308,6 @@
         "logSteps": [
           "Expect \"toHaveText\" locator('#account-status') with timeout 1500ms",
           "waiting for locator('#account-status')",
-          "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
-          "  unexpected value \"Account Suspended\"",
           "  locator resolved to <div id=\"account-status\">Account Suspended</div>",
           "  unexpected value \"Account Suspended\"",
           "  locator resolved to <div id=\"account-status\">Account Suspended</div>",

@@ -62,7 +62,19 @@ Tested across 5 real-world stress scenarios (Strict Mode Violations, Pointer Int
 
 ## 📦 Quick Start
 
-### 1. Terminal CLI (Local & CI Usage)
+### 1. One-Command Setup (Zero Config)
+
+Run in any Playwright project repository:
+
+```bash
+# Auto-detect Playwright config, wire GitHub Actions CI failure autopsy & register MCP
+npx playwright-trace-doctor init
+
+# Preview changes without modifying disk
+npx playwright-trace-doctor init --dry-run
+```
+
+### 2. Terminal CLI (Local & CI Usage)
 
 ```bash
 # Auto-discover and triage the latest failed trace in the project
@@ -78,7 +90,20 @@ npx playwright-trace-doctor --latest --markdown
 npx playwright-trace-doctor --latest --json
 ```
 
-### 2. Model Context Protocol (MCP) Setup
+### 3. Reusable GitHub Action (CI Autopsy & Sticky PR Comments)
+
+Add directly to your `.github/workflows/playwright.yml`:
+
+```yaml
+- name: Autopsy Broken Playwright Tests
+  if: failure()
+  uses: Pranav-Nexus/playwright-trace-doctor@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    post-pr-comment: true
+```
+
+### 4. Model Context Protocol (MCP) Setup
 
 Add to your MCP configuration (`antigravity.json`, `.cursor/mcp.json`, or `claude_desktop_config.json`):
 

@@ -27,7 +27,7 @@ async function generateSampleTrace() {
   const page = await context.newPage();
 
   // Route HTML page
-  await page.route('https://checkout.envestnet.com/**', async (route) => {
+  await page.route('https://api.payment-gateway.internal/**', async (route) => {
     if (route.request().url().includes('/api/checkout/process')) {
       await route.fulfill({
         status: 500,
@@ -69,7 +69,7 @@ async function generateSampleTrace() {
             document.getElementById('real-submit-btn').addEventListener('click', async () => {
               console.error("Initiating checkout request to /api/checkout/process...");
               try {
-                const res = await fetch('https://checkout.envestnet.com/api/checkout/process', { method: 'POST' });
+                const res = await fetch('https://api.payment-gateway.internal/api/checkout/process', { method: 'POST' });
                 if (!res.ok) {
                   console.error("Payment API returned HTTP " + res.status);
                 }
@@ -85,10 +85,10 @@ async function generateSampleTrace() {
   });
 
   // Navigate to mock URL
-  await page.goto('https://checkout.envestnet.com/');
+  await page.goto('https://api.payment-gateway.internal/');
 
   // Perform successful action
-  await page.fill('#user-email', 'tester@envestnet.com');
+  await page.fill('#user-email', 'tester@example.com');
   
   // Click real button to trigger network 500 request
   await page.click('#real-submit-btn');

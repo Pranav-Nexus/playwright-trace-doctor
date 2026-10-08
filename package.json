@@ -4,7 +4,8 @@
   "description": "One-shot diagnostic & self-healing intelligence engine for Playwright traces (MCP Server & CLI)",
   "main": "dist/index.js",
   "bin": {
-    "trace-doctor": "dist/cli.js"
+    "trace-doctor": "dist/cli.js",
+    "playwright-trace-doctor": "dist/cli.js"
   },
   "files": [
     "dist",

@@ -1,0 +1,64 @@
+name: 'Playwright Trace Doctor Autopsy'
+description: 'Instant root-cause autopsy & self-healing intelligence for broken Playwright tests in CI'
+author: 'Pranav H'
+inputs:
+  trace-path:
+    description: 'Path to trace.zip (auto-discovers latest failed trace if omitted)'
+    required: false
+    default: ''
+  post-pr-comment:
+    description: 'Whether to post an automated diagnostic comment on Pull Requests'
+    required: false
+    default: 'true'
+  github-token:
+    description: 'GitHub token for posting PR comments'
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Trace Doctor Autopsy
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.trace-path }}" ]; then
+          npx playwright-trace-doctor "${{ inputs.trace-path }}" --markdown > trace-autopsy.md
+        else
+          npx playwright-trace-doctor --latest --markdown > trace-autopsy.md
+        fi
+        cat trace-autopsy.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Post Diagnostic Autopsy to PR
+      if: inputs.post-pr-comment == 'true' && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+          if (!fs.existsSync('trace-autopsy.md')) return;
+          const body = fs.readFileSync('trace-autopsy.md', 'utf8');
+          const header = '<!-- playwright-trace-doctor-report -->';
+          const commentBody = `${header}\n${body}`;
+
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+
+          const botComment = comments.find(c => c.body && c.body.includes(header));
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody,
+            });
+          }

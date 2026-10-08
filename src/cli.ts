@@ -7,19 +7,58 @@ import { parseTraceArchive } from './trace/archive.js';
 import { analyzeTrace } from './trace/analyzer.js';
 import { findLatestTrace } from './trace/finder.js';
 import { formatTerminalReport } from './formatters/terminal.js';
+import { runInit } from './init/setup.js';
 
 const program = new Command();
 
 program
-  .name('trace-doctor')
+  .name('playwright-trace-doctor')
   .description('One-shot diagnostic & self-healing intelligence engine for Playwright traces')
-  .version('1.0.0')
+  .version('1.0.0');
+
+// 1. One-Command Setup Subcommand
+program
+  .command('init')
+  .description('One-command setup utility for Playwright projects (config audit, GitHub Actions CI & MCP)')
+  .option('-d, --dir <directory>', 'Project directory to inspect and configure', process.cwd())
+  .option('--ci-only', 'Configure only GitHub Actions CI workflow')
+  .option('--mcp-only', 'Configure only local AI Agent MCP server')
+  .option('--dry-run', 'Preview changes without modifying files on disk')
+  .option('-f, --force', 'Overwrite existing workflow configurations')
+  .action(async (options) => {
+    try {
+      await runInit(options);
+    } catch (err: any) {
+      console.error(pc.red(`❌ Setup failed: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+// 2. MCP Server Subcommand
+program
+  .command('mcp')
+  .description('Start Model Context Protocol (MCP) server over stdio for AI coding agents')
+  .action(async () => {
+    try {
+      await import('./mcp.js');
+    } catch (err: any) {
+      console.error(pc.red(`Fatal MCP Server Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+// 3. Default Trace Triage Command
+program
   .argument('[tracePath]', 'Path to Playwright trace.zip archive')
   .option('-l, --latest', 'Automatically discover and inspect the latest trace.zip')
   .option('-d, --dir <directory>', 'Base directory to search for traces', process.cwd())
   .option('-m, --markdown', 'Output diagnostic as clean GitHub Flavored Markdown')
   .option('-j, --json', 'Output raw JSON diagnostic object')
   .action((tracePathArg, options) => {
+    if (tracePathArg === 'init' || tracePathArg === 'mcp') {
+      return;
+    }
+
     try {
       let targetTrace = tracePathArg;
 
