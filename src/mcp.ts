@@ -8,10 +8,23 @@ import { analyzeTrace } from './trace/analyzer.js';
 import { findLatestTrace } from './trace/finder.js';
 
 // Create Model Context Protocol Server
-const server = new McpServer({
-  name: 'playwright-trace-doctor',
-  version: '1.0.0',
-});
+const server = new McpServer(
+  {
+    name: 'playwright-trace-doctor',
+    version: '1.0.0',
+  },
+  {
+    instructions:
+      'Diagnose failed Playwright tests from trace.zip archives. Start with `triage_failure` for a full root-cause summary, failing locator, correlated 4xx/5xx network errors, console errors, and self-healing locator fixes. Use `find_latest_trace` first only if you want to locate or verify the newest trace.zip path without parsing it yet. Use `get_failed_network_calls` when you only need HTTP 4xx/5xx or aborted requests, and `suggest_locator_fixes` when you only need resilient locator alternatives for a failing or custom selector. All tools are read-only and never modify test files or traces.',
+  }
+);
+
+const READ_ONLY_LOCAL_TOOL = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+} as const;
 
 function resolveOrFindTrace(tracePath?: string): string {
   if (tracePath && fs.existsSync(path.resolve(tracePath))) {
@@ -27,14 +40,19 @@ function resolveOrFindTrace(tracePath?: string): string {
 }
 
 // 1. One-Shot Failure Triage
-server.tool(
+server.registerTool(
   'triage_failure',
-  'One-shot diagnostic & self-healing triage of a Playwright failure trace. Extracts failing locator, stack trace, classified root cause, correlated network 4xx/5xx requests, console errors, and resilient self-healing fix code. Automatically finds latest trace if tracePath is omitted.',
   {
-    tracePath: z
-      .string()
-      .optional()
-      .describe('Absolute or relative path to Playwright trace.zip archive. If omitted, automatically discovers latest trace in workspace.'),
+    title: 'Triage Playwright Failure Trace',
+    description:
+      'One-shot diagnostic and self-healing triage of a Playwright failure trace.zip. Extracts the failing locator, stack trace, classified root cause, correlated HTTP 4xx/5xx network requests, console errors, and resilient locator fix recommendations. Automatically discovers the latest trace if tracePath is omitted.',
+    inputSchema: {
+      tracePath: z
+        .string()
+        .optional()
+        .describe('Absolute or relative path to a Playwright trace.zip archive. If omitted, automatically discovers the latest trace in the workspace.'),
+    },
+    annotations: READ_ONLY_LOCAL_TOOL,
   },
   async ({ tracePath }) => {
     try {
@@ -80,14 +98,19 @@ server.tool(
 );
 
 // 2. Discover Latest Failing Trace
-server.tool(
+server.registerTool(
   'find_latest_trace',
-  'Searches test-results/, playwright-report/, and project directories for the newest Playwright trace.zip file.',
   {
-    baseDir: z
-      .string()
-      .optional()
-      .describe('Base directory to search from. Defaults to current working directory.'),
+    title: 'Find Latest Playwright Trace',
+    description:
+      'Searches test-results/, playwright-report/, and project subdirectories for the newest Playwright trace.zip file and returns its path, size, and modification timestamp.',
+    inputSchema: {
+      baseDir: z
+        .string()
+        .optional()
+        .describe('Base directory to search from. Defaults to the current working directory.'),
+    },
+    annotations: READ_ONLY_LOCAL_TOOL,
   },
   async ({ baseDir }) => {
     try {
@@ -131,14 +154,19 @@ server.tool(
 );
 
 // 3. Surgical Correlated Network Errors
-server.tool(
+server.registerTool(
   'get_failed_network_calls',
-  'Inspects Playwright trace and extracts HTTP 4xx/5xx errors or aborted requests that occurred during the test.',
   {
-    tracePath: z
-      .string()
-      .optional()
-      .describe('Path to trace.zip. If omitted, uses latest trace.'),
+    title: 'Get Failed Network Calls',
+    description:
+      'Inspects a Playwright trace.zip and extracts HTTP 4xx/5xx responses and aborted/failed network requests recorded during the test.',
+    inputSchema: {
+      tracePath: z
+        .string()
+        .optional()
+        .describe('Absolute or relative path to trace.zip. If omitted, uses the latest trace in the workspace.'),
+    },
+    annotations: READ_ONLY_LOCAL_TOOL,
   },
   async ({ tracePath }) => {
     try {
@@ -173,18 +201,23 @@ server.tool(
 );
 
 // 4. Self-Healing Locator Recommendations
-server.tool(
+server.registerTool(
   'suggest_locator_fixes',
-  'Analyzes a failing Playwright selector and captures resilient locator alternatives (getByRole, getByTestId, auto-await) based on the DOM state.',
   {
-    tracePath: z
-      .string()
-      .optional()
-      .describe('Path to trace.zip. If omitted, uses latest trace.'),
-    customSelector: z
-      .string()
-      .optional()
-      .describe('Optional custom selector to evaluate if different from the failing trace action.'),
+    title: 'Suggest Resilient Locator Fixes',
+    description:
+      'Analyzes a failing Playwright selector from a trace.zip (or a custom selector) and returns resilient locator alternatives (getByRole, getByTestId, auto-await) based on the recorded DOM state.',
+    inputSchema: {
+      tracePath: z
+        .string()
+        .optional()
+        .describe('Absolute or relative path to trace.zip. If omitted, uses the latest trace in the workspace.'),
+      customSelector: z
+        .string()
+        .optional()
+        .describe('Optional custom selector to evaluate instead of the failing selector recorded in the trace.'),
+    },
+    annotations: READ_ONLY_LOCAL_TOOL,
   },
   async ({ tracePath, customSelector }) => {
     try {
