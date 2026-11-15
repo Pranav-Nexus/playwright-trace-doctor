@@ -45,12 +45,12 @@ server.registerTool(
   {
     title: 'Triage Playwright Failure Trace',
     description:
-      'One-shot diagnostic and self-healing triage of a Playwright failure trace.zip. Extracts the failing locator, stack trace, classified root cause, correlated HTTP 4xx/5xx network requests, console errors, and resilient locator fix recommendations. Automatically discovers the latest trace if tracePath is omitted.',
+      'Diagnose a Playwright failure trace.zip and return advisory fix recommendations as Markdown + JSON (classification, failedAction, networkErrors, consoleErrors, recommendations, tracePath) without modifying any files. If tracePath (local path to a .zip trace archive) is omitted, auto-discovers the newest trace under cwd; returns an error if no trace exists or the archive is unreadable. Use as the default entry point for full failure triage; prefer get_failed_network_calls or suggest_locator_fixes when you only need that single slice, or find_latest_trace to check trace existence first.',
     inputSchema: {
       tracePath: z
         .string()
         .optional()
-        .describe('Absolute or relative path to a Playwright trace.zip archive. If omitted, automatically discovers the latest trace in the workspace.'),
+        .describe('Absolute or relative path to a Playwright trace.zip archive (e.g. test-results/checkout/trace.zip). If omitted, automatically discovers the latest trace in the workspace.'),
     },
     annotations: READ_ONLY_LOCAL_TOOL,
   },
@@ -103,12 +103,12 @@ server.registerTool(
   {
     title: 'Find Latest Playwright Trace',
     description:
-      'Searches test-results/, playwright-report/, and project subdirectories for the newest Playwright trace.zip file and returns its path, size, and modification timestamp.',
+      'Recursively searches test-results/, playwright-report/, and project subdirectories under baseDir (defaults to cwd) for the newest Playwright trace.zip file. Returns JSON with { found, tracePath, sizeBytes, lastModified }, or { found: false, message } when no trace exists (does not throw on empty results). Use before other tools to verify a trace exists or inspect its timestamp; do not use when you already have a tracePath and want immediate triage (use triage_failure directly).',
     inputSchema: {
       baseDir: z
         .string()
         .optional()
-        .describe('Base directory to search from. Defaults to the current working directory.'),
+        .describe('Absolute or relative base directory to search from (e.g. ./e2e). Defaults to the current working directory.'),
     },
     annotations: READ_ONLY_LOCAL_TOOL,
   },
@@ -159,12 +159,12 @@ server.registerTool(
   {
     title: 'Get Failed Network Calls',
     description:
-      'Inspects a Playwright trace.zip and extracts HTTP 4xx/5xx responses and aborted/failed network requests recorded during the test.',
+      'Extracts all HTTP 4xx/5xx responses and aborted/failed requests across a Playwright trace.zip and returns JSON { tracePath, totalRequests, failedRequestsCount, failedRequests }. If tracePath (local .zip path) is omitted, auto-discovers the latest trace under cwd; returns an error if no trace exists. Use when debugging API/backend failures in isolation; prefer triage_failure for full root-cause, console, and locator analysis.',
     inputSchema: {
       tracePath: z
         .string()
         .optional()
-        .describe('Absolute or relative path to trace.zip. If omitted, uses the latest trace in the workspace.'),
+        .describe('Absolute or relative path to trace.zip (e.g. test-results/checkout/trace.zip). If omitted, uses the latest trace in the workspace.'),
     },
     annotations: READ_ONLY_LOCAL_TOOL,
   },
@@ -206,16 +206,16 @@ server.registerTool(
   {
     title: 'Suggest Resilient Locator Fixes',
     description:
-      'Analyzes a failing Playwright selector from a trace.zip (or a custom selector) and returns resilient locator alternatives (getByRole, getByTestId, auto-await) based on the recorded DOM state.',
+      'Analyzes a failing Playwright selector from a trace.zip (or customSelector, e.g. "button#pay") against recorded DOM state and returns advisory JSON { failingSelector, failureClassification, recommendations } (getByRole, getByTestId, auto-await) without editing test files. Defaults to the latest trace under cwd if tracePath is omitted; returns an error if no trace exists, or undefined failingSelector with general recommendations if no action failed. Use when you only need selector replacements; prefer triage_failure for full failure diagnosis or non-selector failures.',
     inputSchema: {
       tracePath: z
         .string()
         .optional()
-        .describe('Absolute or relative path to trace.zip. If omitted, uses the latest trace in the workspace.'),
+        .describe('Absolute or relative path to trace.zip (e.g. test-results/checkout/trace.zip). If omitted, uses the latest trace in the workspace.'),
       customSelector: z
         .string()
         .optional()
-        .describe('Optional custom selector to evaluate instead of the failing selector recorded in the trace.'),
+        .describe('Optional Playwright selector string (e.g. "button#submit" or "text=Pay") to report as failingSelector instead of the trace action selector.'),
     },
     annotations: READ_ONLY_LOCAL_TOOL,
   },
